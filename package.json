@@ -1,0 +1,20 @@
+{
+  "name": "worm",
+  "version": "1.0.0",
+  "description": "a relational and non relational database thats simple and easy to use",
+  "main": "index.js",
+  "scripts": {
+    "test": "run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/derekzyl/worm"
+  },
+  "keywords": [
+    "nodes",
+    "odm",
+    "orm"
+  ],
+  "author": "Derek og",
+  "license": "MIT"
+}
