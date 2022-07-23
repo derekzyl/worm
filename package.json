@@ -16,5 +16,8 @@
     "orm"
   ],
   "author": "Derek og",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "prettier": "^2.7.1"
+  }
 }

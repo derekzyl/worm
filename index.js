@@ -1,3 +1,9 @@
+class newErr extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "newErr";
+  }
+}
 /**
  * this is the data validator
  * @param {object} data - the data to validate
@@ -5,18 +11,20 @@
  * @returns {object} - the validated data
  * @throws {Error} - if the data is not valid
  */
-class newErr extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "newErr";
-  }
-}
 class Schema {
   constructor(schema) {
     this.schema = schema;
   }
-
-  validateData(data) {
+  /**
+   * this is the data validator
+   * @param {object} data - the data to validate
+   * @param {array} rules - the rules to validate the data with
+   * @returns {object} - the validated data
+   * @throws {Error} - if the data is not valid
+   * @Example { name :{type: "String", required: true, unique: true, maxLength: 10, minLength: 5} }
+   */
+  validateData(inData) {
+    const data = JSON.parse(JSON.stringify(inData));
     if (typeof data !== "object") {
       throw new newErr("data must be an object");
     }
@@ -50,9 +58,8 @@ class Schema {
               throw new newErr("data must be an array");
             }
           }
-          console.log(result);
 
-          console.log(typeof v, v.name, "typeof va", k);
+          //  console.log(typeof v, v.name, "typeof va", k);
         }
 
         if (typeof value === "object") {
@@ -61,44 +68,49 @@ class Schema {
             validate,
             required,
             unique,
-            maxValue,
-            minValue,
             maxLength,
             minLength,
             include,
           } = value;
 
-          if (typeof type === "String") {
+          if (typeof type === "string") {
             if (typeof data[key] !== "string") {
               throw new newErr("data must be a string");
             }
           }
-          if (typeof type === "Number") {
+
+          if (type[0].name === "String" && Array.isArray(type)) {
+            if (typeof data[key] !== "string") {
+              throw new newErr(type[1] ? type[1] : "data must be a string");
+            }
+          }
+          console.log(typeof type, type.name, "typeof va", typeof data[key]);
+          if (typeof type === "number") {
             if (typeof data[key] !== "number") {
               throw new newErr("data must be a number");
             }
           }
-          if (typeof type === "Boolean") {
+          if (typeof type === "boolean") {
             if (typeof data[key].type !== "boolean") {
               throw new newErr("data must be a boolean");
             }
           }
-          if (typeof type === "Array") {
+          if (typeof type === "array") {
             if (typeof data[key] !== "object") {
               throw new newErr("data must be an array");
             }
           }
           if (required) {
             if (!data[key]) {
-              throw new newErr("data must be required");
+              throw new newErr(`${key} is required`);
             }
           }
-          if (unique) {
-            if (data[key] === data[key]) {
-              throw new newErr("data must be unique");
-            }
-          }
-          if (maxValue) {
+          //  if (unique) {
+          //    if (data[key] === data[key]) {
+          //      throw new newErr("data must be unique");
+          //    }
+          //  }
+          if (maxLength) {
             if (data[key] > maxValue) {
               throw new newErr("data must be less than maxValue");
             }
@@ -109,15 +121,23 @@ class Schema {
   }
 }
 
-const ne = new Worm();
-ne.createTable({
-  name: String,
+const neo = new Schema({
+  name: "String",
   age: Number,
-  another: {
-    type: Number,
-    maximumNumber: 5,
-    minimum: 6,
+  isCool: Boolean,
+  friends: String,
+  address: {
+    type: [String],
+    required: true,
+    unique: true,
   },
+});
+neo.validateData({
+  name: "John",
+  age: 30,
+  isCool: true,
+  friends: "james",
+  address: true,
 });
 
 // if (keys.length !== dataKeys.length) {
