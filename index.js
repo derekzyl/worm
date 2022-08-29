@@ -1,3 +1,6 @@
+const ENCRYPT = require("./encrypt");
+const PASSWORD = require("./password.js");
+
 class newErr extends Error {
   constructor(message) {
     super(message);
@@ -24,67 +27,122 @@ class Schema {
    * @Example { name :{type: "String", required: true, unique: true, maxLength: 10, minLength: 5} }
    */
   validateData(inData) {
-    const data = JSON.parse(JSON.stringify(inData));
-    if (typeof data !== "object") {
+    let data = JSON.parse(JSON.stringify(inData));
+
+    // if (Array.isArray(data)) {
+    //   data.forEach((dat) => (data = dat));
+
+    // }
+    console.log(data);
+    if (typeof data !== "object" && !Array.isArray(data)) {
       throw new newErr("data must be an object");
     }
-    const keys = Object.keys(this.schema);
-    const dataKeys = Object.keys(data);
-    if (keys.length !== dataKeys.length) {
-      throw new newErr("data must have the same keys as the schema");
-    }
+
+    //todo const keys = Object.keys(this.schema);
+    // todo const dataKeys = Object.keys(data);
+    //todo if (keys.length !== dataKeys.length) {
+    //todo   throw new newErr("data must have the same keys as the schema");
+    // todo}
 
     if (typeof this.schema === "object") {
       for (const [key, value] of Object.entries(this.schema)) {
-        if (typeof value === "function" || typeof value === "string") {
+        console.log(Array.isArray(value));
+        // console.log(
+        //   value,
+        //   "name value",
+
+        //   "hold am na the value be this",
+        //   key
+        // );
+        if (Array.isArray(value) /*&& value instanceof Array*/) {
+          const dataValue = data[key];
+
+          console.log(value, "<<<<<<<<<=========is an array ");
+
+          dataValue.forEach((item) => {
+            if (
+              typeof value[0] === "string" ||
+              value[0].name === "String" ||
+              value[0] === "String"
+            ) {
+              if (typeof item !== "string") {
+                throw new newErr(`${key}: [${item}] must be a string`);
+              }
+            }
+            if (value[0].name === "Number" || value[0] === "Number") {
+              if (typeof item !== "number") {
+                throw new newErr(`${key}: [${item}] must be a number`);
+              }
+            }
+            if (value[0].name === "Boolean" || value[0] === "Boolean") {
+              if (typeof item !== "boolean") {
+                throw new newErr(`${key}: [${item}] must be a boolean`);
+              }
+            }
+          });
+        }
+
+        if (typeof value === "function") {
           const dataValue = data[key];
           if (value.name === "String" || value === "String") {
             if (typeof dataValue !== "string") {
-              throw new newErr("data must be a string");
+              throw new newErr(`${key}: [ ${dataValue} ] must be a string`);
             }
           }
           if (value.name === "Number" || value === "Number") {
             if (typeof dataValue !== "number") {
-              throw new newErr("data must be a number");
+              throw new newErr(`${key}:  ${dataValue}  must be a number`);
             }
           }
           if (value.name === "Boolean" || value === "Boolean") {
             if (typeof dataValue !== "boolean") {
-              throw new newErr("data must be a boolean");
-            }
-          }
-          if (value.name === "Array" || value === "Array") {
-            if (typeof dataValue !== "array") {
-              throw new newErr("data must be an array");
+              throw new newErr(`${key}: [ ${dataValue}  ] must be a boolean`);
             }
           }
 
           //  console.log(typeof v, v.name, "typeof va", k);
         }
+        /**
+         * it is an object literal to give precise details of your model key
+         * ****************************************************************
+         * @param {string} type - the type of the data
+         * @param {boolean} required - if the data is required
+         * @param {boolean} unique - if the data is unique
+         * @param {number} maxLength - the max length of the data
+         * @param {number} minLength - the min length of the data
+         * @param {string} regex - the regex of the data
+         * @param {array} enum - the enum of the data
+         * @param {regex} email - the enum values of the data
+         */
 
         if (typeof value === "object") {
           const {
             type,
+            enum: enumValue,
             validate,
             required,
             unique,
             maxLength,
             minLength,
             include,
+            exclude,
+            isEmail,
+            forEncrypting,
+            isPassword
           } = value;
 
           if (typeof type === "string") {
             if (typeof data[key] !== "string") {
-              throw new newErr("data must be a string");
+              throw new newErr(data[key] + " data must be a string");
             }
           }
 
-          if (type[0].name === "String" && Array.isArray(type)) {
-            if (typeof data[key] !== "string") {
-              throw new newErr(type[1] ? type[1] : "data must be a string");
-            }
-          }
-          console.log(typeof type, type.name, "typeof va", typeof data[key]);
+          // if (type[0].name === "String" && Array.isArray(type)) {
+          //   if (typeof data[key] !== "string") {
+          //     throw new newErr(" data must be a string");
+          //   }
+          // }
+          // console.log(typeof type, type.name, "typeof va", typeof data[key]);
           if (typeof type === "number") {
             if (typeof data[key] !== "number") {
               throw new newErr("data must be a number");
@@ -95,50 +153,148 @@ class Schema {
               throw new newErr("data must be a boolean");
             }
           }
-          if (typeof type === "array") {
-            if (typeof data[key] !== "object") {
-              throw new newErr("data must be an array");
-            }
-          }
+
           if (required) {
+            if (Array.isArray(required)) {
+              if (!data[key]) {
+                throw new newErr(
+                  required[1] ? required[1] : `${key} is required`
+                );
+              }
+            }
             if (!data[key]) {
               throw new newErr(`${key} is required`);
             }
           }
-          //  if (unique) {
-          //    if (data[key] === data[key]) {
-          //      throw new newErr("data must be unique");
-          //    }
-          //  }
-          if (maxLength) {
-            if (data[key] > maxValue) {
-              throw new newErr("data must be less than maxValue");
+          if (unique) {
+            if (data[key] === data[key]) {
+              //todo: fetch data from database and compare  throw new newErr("data must be unique");
             }
+          }
+          if (maxLength) {
+            if (Array.isArray(maxLength)) {
+              if (data[key].length > maxLength[0]) {
+                throw new newErr(
+                  maxLength[1]
+                    ? maxLength[1]
+                    : "data must be less than " + maxLength[0]
+                );
+              }
+            }
+            if (data[key].length > maxLength) {
+              throw new newErr("data must be less than " + maxLength);
+            }
+          }
+          if (minLength) {
+            console.log("typeof minlength", typeof minLength);
+            if (Array.isArray(minLength)) {
+              if (data[key].length < minLength[0]) {
+                throw new newErr(
+                  minLength[1]
+                    ? minLength[1]
+                    : "data must be greater than " + minLength[0]
+                );
+              }
+            }
+            if (data[key].length < minLength) {
+              throw new newErr(`data must be greater than  ${minValue}`);
+            }
+          }
+          if (include) {
+            if (!data[key].includes(include)) {
+              throw new newErr(`${data[key]} must be included in the ${key}`);
+            }
+          }
+          if (enumValue) {
+            if (!data[key].includes(enumValue)) {
+              throw new newErr(`${data[key]} is not part of the enum`);
+            }
+          }
+          if (isEmail) {
+            const stringing = String(data[key]);
+            if (
+              !stringing.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
+            ) {
+              throw new newErr(`${stringing} <-------- Must be an email`);
+            }
+          }
+          if (forEncrypting && !isPassword) {
+            const dat = new ENCRYPT();
+
+            console.log(
+              "<<<<<<<<<<<<<-----is encrypting------->>>>",
+              data[key]
+            );
+            dat.encrypting(data[key]);
+            const ne = dat.encrypted;
+            console.log(ne);
+          }
+          if(isPassword && !forEncrypting){
+            const p = new PASSWORD()
           }
         }
       }
     }
   }
+
+  validator(data) {
+    if (Array.isArray(data)) {
+      data.forEach((data) => this.validateData(data));
+    } else {
+      return this.validateData(data);
+    }
+  }
+
+  saveData(data) {
+    this.validate(data);
+    return this.db.save(data);
+  }
 }
 
 const neo = new Schema({
-  name: "String",
-  age: Number,
+  name: String,
+  age: [Number],
   isCool: Boolean,
   friends: String,
   address: {
-    type: [String],
+    type: String,
     required: true,
     unique: true,
+    isEmail: true,
+    forEncrypting: true,
+  },
+  game: {
+    type: String,
+    minLength: [6, "this is a fucking hole"],
   },
 });
-neo.validateData({
-  name: "John",
-  age: 30,
-  isCool: true,
-  friends: "james",
-  address: true,
-});
+neo.validator([
+  {
+    name: "John",
+    age: [30, 56, 55],
+    isCool: true,
+    friends: "888888",
+    address: "david@gmail.com",
+    game: "222292",
+  },
+  {
+    name: "John",
+    age: ["30", 56, 55],
+    isCool: true,
+    friends: "james",
+    address: "de@gmail.com",
+    game: "ddfffffffffffff",
+  },
+  ,
+  {
+    name: "John",
+    age: [30, 56, 55],
+    isCool: true,
+    friends: "james",
+    address: "derl@gmail.com",
+    game: 33334444444444,
+  },
+]);
 
 // if (keys.length !== dataKeys.length) {
 //    throw new Error('data must have the same keys as the schema');
