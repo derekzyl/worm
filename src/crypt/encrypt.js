@@ -5,25 +5,34 @@ const { Buffer } = require("node:buffer");
 var fs = require("fs");
 
 module.exports = class ENCRYPT {
+  password = "Password used to generate key";
+  salt = "this is the salt used to hash the crypto sync";
+  iv = Buffer.alloc(16, 0, "hex");
+  algorithm = "aes-192-cbc";
   constructor(data) {
-    const {password, salt, iv} = data
-    this.algorithm = "aes-192-cbc";
+    if (data) {
+      const { password, salt, iv } = data;
 
-    if (password) {
       this.password = password;
-    } else {
-      this.password = "Password used to generate key";
-    }
-
-    if (salt) {
       this.salt = salt;
-    } else {
-      this.salt = "this is the salt used to hash the crypto sync";
-    }
-    if (iv) {
       this.iv = iv;
-    } else {
-      this.iv = Buffer.alloc(16, 0, "hex");
+
+      // if (password) {
+      //   this.password = password;
+      // } else {
+      //   this.password = "Password used to generate key";
+      // }
+
+      // if (salt) {
+      //   this.salt = salt;
+      // } else {
+      //   this.salt = "this is the salt used to hash the crypto sync";
+      // }
+      // if (iv) {
+      //   this.iv = iv;
+      // } else {
+      //   this.iv = Buffer.alloc(16, 0, "hex");
+      // }
     }
     this.key = crypto.scryptSync(this.password, this.salt, 24);
     this.encrypted = "";
@@ -82,7 +91,7 @@ module.exports = class ENCRYPT {
       }
     });
     decipher.on("end", () => {
-      console.log(this.decrypted);
+      // console.log(this.decrypted);
     });
     decipher.write(data, "hex");
     decipher.end();
