@@ -4,9 +4,9 @@ const { Buffer } = require("node:buffer");
 
 var fs = require("fs");
 
-module.exports = class ENCRYPT {
+class ENCRYPT {
   password = "Password used to generate key";
-  salt = "this is the salt used to hash the crypto sync";
+  salt = "this is the salt used to hash the crypto sync yrtytyuuy8yuyu9yo8yuio";
   iv = Buffer.alloc(16, 0, "hex");
   algorithm = "aes-192-cbc";
   constructor(data) {
@@ -96,4 +96,7 @@ module.exports = class ENCRYPT {
     decipher.write(data, "hex");
     decipher.end();
   }
-};
+}
+const s = new ENCRYPT();
+s.encrypting("hello world");
+console.log(s.encrypted);

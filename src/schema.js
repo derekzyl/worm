@@ -1,5 +1,5 @@
-const ENCRYPT = require("./encrypt");
-const PASSWORD = require("./password.js");
+const ENCRYPT = require("./crypt/encrypt");
+const PASSWORD = require("./crypt/password.js");
 const { pbkdf2Sync, randomBytes } = require("crypto");
 
 class newErr extends Error {
@@ -128,6 +128,7 @@ class Schema {
             include,
             isEmail,
             forEncrypting,
+            isDefault,
             isPassword,
           } = value;
 
@@ -269,6 +270,22 @@ class Schema {
               );
             }
           }
+          if (isPassword && forEncrypting) {
+            throw new newErr(
+              `you caant use both isPassword and isEncrypting at the same time`
+            );
+          }
+          if (isDefault) {
+            if (Array.isArray(isDefault)) {
+              if (!data[key]) {
+                isDefault[0] = data[key];
+              }
+            } else {
+              if (!data[key]) {
+                isDefault = data[key];
+              }
+            }
+          }
         }
 
         // console.log(
@@ -277,6 +294,7 @@ class Schema {
         //   data[key]
         // );
       }
+      console.log(data);
       return data;
     }
   }
@@ -307,6 +325,7 @@ const dat = {
   length: 32,
   digest: "sha512",
 };
+
 const neo = new Schema({
   name: {
     type: String,
@@ -320,7 +339,6 @@ const neo = new Schema({
     required: true,
     unique: true,
     isEmail: true,
-    forEncrypting: true,
   },
   game: {
     type: String,
@@ -339,7 +357,7 @@ neo.validator([
   },
   {
     name: "jenni",
-    age: ["30", 56, 55],
+    age: [30, 56, 55],
     isCool: true,
     friends: "paul",
     address: "de@gmail.com",
