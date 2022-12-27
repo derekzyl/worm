@@ -260,4 +260,4 @@ const we = {
   data: data,
 };
 
-console.log(we);
+// console.log(we);
