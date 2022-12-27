@@ -4,7 +4,7 @@ const { MongoClient } = require("mongodb");
 
 // Connection URL
 
-// mongodb+srv://phonebook:phonebook@cluster0.6kgd1.mongodb.net/phonebook?retryWrites=true&w=majority
+// mongodb+srv://password:password@cluster0.6kgd1.mongodb.net/phonebook?retryWrites=true&w=majority
 const url = "mongodb://localhost:27017";
 const client = new MongoClient(url);
 
