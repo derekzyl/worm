@@ -1,0 +1,1 @@
+{"data":{"salt":"this is the salt used to hash the crypto sync yrtytyuuy8yuyu9yo8yuio","algorithm":"aes-192-cbc","password":"Password used to generate key","key":{"type":"Buffer","data":[27,245,207,224,55,0,242,190,171,157,21,210,181,48,138,3,46,193,230,5,79,166,96,206]},"iv":{"type":"Buffer","data":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}}}

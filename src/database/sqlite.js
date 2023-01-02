@@ -10,7 +10,7 @@ db.serialize(() => {
   }
   stmt.finalize();
 
-  db.each("SELECT rowid AS id, info FROM lorem", (err, row) => {
+  db.each("SELECT row id AS id, info FROM lorem", (err, row) => {
     console.log(row.id + ": " + row.info);
   });
 });

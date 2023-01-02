@@ -380,7 +380,9 @@ const neo = new Schema({
   },
 });
 
-// console.log(neo.schema, "this ia a schema");
+console.log(neo.schema, "this ia a schema");
+
+//todo this will be migrated to mongodb section
 const b = neo.schema;
 let jsond = {
   required: [],
@@ -512,32 +514,136 @@ for ([k, v] of Object.entries(b)) {
   // console.log(b[k],);
 }
 console.log(jsond);
-// b.forEach((e) => console.log(e.name));
-// db.createCollection("students", {
-//   validator: {
-//      $jsonSchema: {
-//         bsonType: "object",
-//         title: "Student Object Validation",
-//         required: [ "address", "major", "name", "year" ],
-//         properties: {
-//            name: {
-//               bsonType: "string",
-//               description: "'name' must be a string and is required"
-//            },
-//            year: {
-//               bsonType: "int",
-//               minimum: 2017,
-//               maximum: 3017,
-//               description: "'year' must be an integer in [ 2017, 3017 ] and is required"
-//            },
-//            gpa: {
-//               bsonType: [ "double" ],
-//               description: "'gpa' must be a double if the field exists"
-//            }
-//         }
-//      }
-//   }
-// } )
+//! migration to mongodb ends here
+
+// todo create a structure for creating table for mysql
+let vc = [];
+
+for ([k, v] of Object.entries(b)) {
+}
+
+if (typeof b === "object") {
+  for (const [key, value] of Object.entries(b)) {
+    let bbb = `${key}`;
+    if (typeof value === "function") {
+      if (value.name === "String" || value === "String") {
+        //todo for sql
+      }
+
+      if (value.name === "Number" || value === "Number") {
+        //todo for sql
+      }
+      if (value.name === "Boolean" || value === "Boolean") {
+        //todo for sql
+      }
+    }
+
+    if (typeof value === "object") {
+      const {
+        type,
+        enum: enumValue,
+        validate,
+        required,
+        unique,
+        maxLength,
+        minLength,
+        include,
+        isEmail,
+        forEncrypting,
+        isDefault,
+        isPassword,
+        minimum,
+        maximum,
+      } = value;
+
+      if (typeof type === "string") {
+        //todo for sql
+      }
+
+      if (typeof type === "number") {
+        //todo for sql
+      }
+      if (typeof type === "boolean") {
+        //todo for sql
+      }
+
+      if (required) {
+        if (Array.isArray(required)) {
+          //todo for sql        //todo for sql
+        }
+        //todo for sql
+      }
+      if (unique) {
+        //todo for sql
+      }
+      if (maxLength) {
+        if (Array.isArray(maxLength)) {
+          //todo for sql
+        }
+        //todo for sql
+      }
+      if (minimum) {
+        if (Array.isArray(minimum)) {
+          //todo for sql
+        }
+        //todo for sql
+      }
+      if (maximum) {
+        if (Array.isArray(maximum)) {
+          //todo for sql
+        }
+        //todo for sql
+      }
+      if (minLength) {
+        // console.log("typeof minlength", typeof minLength);
+        if (Array.isArray(minLength)) {
+          //todo for sql
+        }
+        //todo for sql
+      }
+      if (include) {
+        //todo for sql
+        if (Array.isArray(include)) {
+          //todo for sql
+        }
+      }
+      if (enumValue) {
+        //todo for sql
+      }
+      if (isEmail) {
+        //todo for sql
+        if (Array.isArray(isEmail)) {
+          //todo for sql
+        }
+      }
+      if (forEncrypting && !isPassword) {
+        //todo for sql
+      }
+      if (isPassword && !forEncrypting) {
+        console.log("this ia s a key obj", data[key]);
+        if (Array.isArray(isPassword)) {
+          //todo for sql
+        }
+      }
+
+      if (isDefault) {
+        if (Array.isArray(isDefault)) {
+          //todo for sql
+        } else {
+          //todo for sql
+        }
+      }
+    }
+
+    // console.log(
+    //   key,
+    //   "<<<<<<<<<<<------key and data---------->>>>>>>>",
+    //   data[key]
+    // );
+  }
+  // console.log(data);
+  return data;
+}
 
 neo.validator([
   {
