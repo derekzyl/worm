@@ -118,7 +118,7 @@ class Schema {
          * @param {regex} email - the enum values of the data
          */
 
-        if (typeof value === "object") {
+        if (typeof value === "object" && !Array.isArray(value)) {
           const {
             type,
             enum: enumValue,
@@ -363,9 +363,9 @@ const neo = new Schema({
     type: String,
     isPassword: [true, dat],
   },
-  age: [Number],
+  age: Number,
   nime: Number,
-  good: Float64Array,
+  good: Number,
   isCool: Boolean,
   friends: String,
   address: {
@@ -523,22 +523,39 @@ for ([k, v] of Object.entries(b)) {
 }
 
 if (typeof b === "object") {
+  let bbb = {};
   for (const [key, value] of Object.entries(b)) {
-    let bbb = `${key}`;
+    bbb[key] = [];
     if (typeof value === "function") {
       if (value.name === "String" || value === "String") {
+        bbb[key].push("VARCHAR");
         //todo for sql
       }
 
       if (value.name === "Number" || value === "Number") {
+        bbb[key].push("INT");
         //todo for sql
       }
       if (value.name === "Boolean" || value === "Boolean") {
         //todo for sql
+        bbb[key].push("BOOLEAN");
       }
     }
+    if (Array.isArray(value) /*&& value instanceof Array*/) {
+      // console.log(value, "<<<<<<<<<=========is an array ");
 
-    if (typeof value === "object") {
+      if (
+        typeof value[0] === "string" ||
+        value[0].name === "String" ||
+        value[0] === "String"
+      ) {
+      }
+      if (value[0].name === "Number" || value[0] === "Number") {
+      }
+      if (value[0].name === "Boolean" || value[0] === "Boolean") {
+      }
+    }
+    if (typeof value === "object" && !Array.isArray(v)) {
       const {
         type,
         enum: enumValue,
@@ -555,50 +572,72 @@ if (typeof b === "object") {
         minimum,
         maximum,
       } = value;
-
-      if (typeof type === "string") {
+      if (typeof type) {
+        console.log(typeof type.name === "string", "type of type");
+      }
+      if (typeof type && typeof type.name === "string") {
         //todo for sql
+        bbb[key].push("VARCHAR");
       }
 
-      if (typeof type === "number") {
+      if (typeof type && typeof type.name === "number") {
         //todo for sql
+        bbb[key].push("INT");
       }
-      if (typeof type === "boolean") {
+      if (typeof type && typeof type.name === "boolean") {
+        bbb[key].push("BOOLEAN");
         //todo for sql
       }
 
       if (required) {
         if (Array.isArray(required)) {
+          bbb[key].push("NOT NULL");
           //todo for sql        //todo for sql
         }
         //todo for sql
       }
       if (unique) {
         //todo for sql
+        bbb[key].push("UNIQUE");
       }
       if (maxLength) {
         if (Array.isArray(maxLength)) {
+          bbb[key].push(`VARCHAR(${maxLength[0]})`);
           //todo for sql
         }
+        bbb[key].push(`VARCHAR(${maxLength})`);
+
         //todo for sql
       }
       if (minimum) {
         if (Array.isArray(minimum)) {
+          bbb[key].push(`VARCHAR(${minimum[0]})`);
+
           //todo for sql
         }
+        bbb[key].push(`VARCHAR(${minimum})`);
+
         //todo for sql
       }
       if (maximum) {
         if (Array.isArray(maximum)) {
+          bbb[key].push(`VARCHAR(${maximum[0]})`);
+
           //todo for sql
         }
+        bbb[key].push(`VARCHAR(${maximum})`);
         //todo for sql
       }
       if (minLength) {
         // console.log("typeof minlength", typeof minLength);
         if (Array.isArray(minLength)) {
+          bbb[key].push(`VARCHAR(${minLength[0]})`);
+
           //todo for sql
+        } else {
+          bbb[key].push(`VARCHAR(${minLength})`);
         }
+
         //todo for sql
       }
       if (include) {
@@ -613,6 +652,8 @@ if (typeof b === "object") {
       if (isEmail) {
         //todo for sql
         if (Array.isArray(isEmail)) {
+          bbb[key].push(`VARCHAR(${255})`);
+
           //todo for sql
         }
       }
@@ -620,7 +661,6 @@ if (typeof b === "object") {
         //todo for sql
       }
       if (isPassword && !forEncrypting) {
-        console.log("this ia s a key obj", data[key]);
         if (Array.isArray(isPassword)) {
           //todo for sql
         }
@@ -628,8 +668,12 @@ if (typeof b === "object") {
 
       if (isDefault) {
         if (Array.isArray(isDefault)) {
+          bbb[key].push(`DEFAULT '${isDefault[0]}'`);
+
           //todo for sql
         } else {
+          bbb[key].push(`DEFAULT '${isDefault}'`);
+
           //todo for sql
         }
       }
@@ -642,7 +686,7 @@ if (typeof b === "object") {
     // );
   }
   // console.log(data);
-  return data;
+  console.log(bbb);
 }
 
 neo.validator([
