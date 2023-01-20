@@ -377,6 +377,8 @@ const neo = new Schema({
   game: {
     type: String,
     minLength: [6, "this is a fucking hole"],
+    required: true,
+    unique: true,
   },
 });
 
@@ -528,17 +530,17 @@ if (typeof b === "object") {
     bbb[key] = [];
     if (typeof value === "function") {
       if (value.name === "String" || value === "String") {
-        bbb[key].push("VARCHAR");
+        bbb[key].push(key + " VARCHAR");
         //todo for sql
       }
 
       if (value.name === "Number" || value === "Number") {
-        bbb[key].push("INT");
+        bbb[key].push(key + " INT");
         //todo for sql
       }
       if (value.name === "Boolean" || value === "Boolean") {
         //todo for sql
-        bbb[key].push("BOOLEAN");
+        bbb[key].push(key + " BOOLEAN");
       }
     }
     if (Array.isArray(value) /*&& value instanceof Array*/) {
@@ -594,6 +596,7 @@ if (typeof b === "object") {
           bbb[key].push("NOT NULL");
           //todo for sql        //todo for sql
         }
+        bbb[key].push("NOT NULL");
         //todo for sql
       }
       if (unique) {
@@ -602,39 +605,47 @@ if (typeof b === "object") {
       }
       if (maxLength) {
         if (Array.isArray(maxLength)) {
+          bbb[key].shift();
           bbb[key].push(`VARCHAR(${maxLength[0]})`);
           //todo for sql
         }
+        bbb[key].shift();
         bbb[key].push(`VARCHAR(${maxLength})`);
 
         //todo for sql
       }
       if (minimum) {
         if (Array.isArray(minimum)) {
+          bbb[key].shift();
           bbb[key].push(`VARCHAR(${minimum[0]})`);
 
           //todo for sql
         }
+        bbb[key].shift();
         bbb[key].push(`VARCHAR(${minimum})`);
 
         //todo for sql
       }
       if (maximum) {
         if (Array.isArray(maximum)) {
+          bbb[key].shift();
           bbb[key].push(`VARCHAR(${maximum[0]})`);
 
           //todo for sql
         }
+        bbb[key].shift();
         bbb[key].push(`VARCHAR(${maximum})`);
         //todo for sql
       }
       if (minLength) {
         // console.log("typeof minlength", typeof minLength);
         if (Array.isArray(minLength)) {
+          bbb[key].shift();
           bbb[key].push(`VARCHAR(${minLength[0]})`);
 
           //todo for sql
         } else {
+          bbb[key].shift();
           bbb[key].push(`VARCHAR(${minLength})`);
         }
 
@@ -678,15 +689,7 @@ if (typeof b === "object") {
         }
       }
     }
-
-    // console.log(
-    //   key,
-    //   "<<<<<<<<<<<------key and data---------->>>>>>>>",
-    //   data[key]
-    // );
   }
-  // console.log(data);
-  console.log(bbb);
 }
 
 neo.validator([
