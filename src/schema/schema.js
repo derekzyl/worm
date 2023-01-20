@@ -378,19 +378,18 @@ const neo = new Schema({
     type: String,
     minLength: [6, "this is a fucking hole"],
     required: true,
-    unique: true,
   },
 });
 
 console.log(neo.schema, "this ia a schema");
 
 //todo this will be migrated to mongodb section
-const b = neo.schema;
 let jsond = {
   required: [],
   bsonType: {},
   properties: {},
 };
+const b = neo.schema;
 
 for ([k, v] of Object.entries(b)) {
   // console.log(typeof k, "and the", typeof v);
@@ -520,9 +519,6 @@ console.log(jsond);
 
 // todo create a structure for creating table for mysql
 let vc = [];
-
-for ([k, v] of Object.entries(b)) {
-}
 
 if (typeof b === "object") {
   let bbb = {};
@@ -689,7 +685,15 @@ if (typeof b === "object") {
         }
       }
     }
+
+    // console.log(
+    //   key,
+    //   "<<<<<<<<<<<------key and data---------->>>>>>>>",
+    //   data[key]
+    // );
   }
+  // console.log(data);
+  console.log(bbb);
 }
 
 neo.validator([
