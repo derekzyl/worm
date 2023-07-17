@@ -29,6 +29,9 @@ class Schema {
    * @throws {Error} - if the data is not valid
    * @Example { name :{type: "String", required: true, unique: true, maxLength: 10, minLength: 5} }
    */
+
+  async checkSchema() {}
+
   async validateData(inData) {
     let data = JSON.parse(JSON.stringify(inData));
 
@@ -389,6 +392,7 @@ let jsond = {
   bsonType: {},
   properties: {},
 };
+
 const b = neo.schema;
 
 for ([k, v] of Object.entries(b)) {
@@ -696,13 +700,17 @@ if (typeof b === "object") {
   console.log(bbb);
 }
 
+
+
+
+
 neo.validator([
   {
-    name: "sarah",
+    name: "hello",
     age: [30, 56, 55],
     isCool: true,
     friends: "888888",
-    address: "david@gmail.com",
+    address: "dav@gh.com",
     game: "222292",
   },
   {
