@@ -1,11 +1,11 @@
-const { pbkdf2Sync, randomBytes } = require("crypto");
+import { randomBytes, pbkdf2Sync } from "crypto";
 
-class PASSWORD {
+export class PASSWORD {
   salt = randomBytes(32).toString("hex");
   length = 16;
   digest = "sha512";
 
-  constructor(data) {
+  constructor(data?: { salt: string; length: number; digest: string }) {
     if (data) {
       const { salt, length, digest } = data;
 
@@ -38,7 +38,7 @@ class PASSWORD {
     // console.log(this.salt, this.length, this.digest);
   }
 
-  hashPassword(password) {
+  hashPassword(password: string) {
     // console.log(password, "indsid hash pwrd");
 
     const key = pbkdf2Sync(
@@ -51,7 +51,7 @@ class PASSWORD {
     return key.toString("hex");
     // console.log(key.toString("hex"));
   }
-  comparePassword(currentPassword, hashedPassword) {
+  comparePassword(currentPassword: string, hashedPassword: string) {
     const key = pbkdf2Sync(
       currentPassword,
       this.salt,
@@ -64,8 +64,6 @@ class PASSWORD {
     else return false;
   }
 }
-
-module.exports = PASSWORD;
 
 // const nn = new PASSWORD({
 //   salt: "10aaff135fd8ce200486aecf8285a2d582f0fd68d67f283fcf0ace54714e9f4f",

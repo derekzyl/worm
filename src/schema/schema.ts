@@ -1,11 +1,9 @@
-const ENCRYPT = require("../crypt/encrypt.js");
-const PASSWORD = require("../crypt/password.js");
-const { pbkdf2Sync, randomBytes } = require("crypto");
-const { Decimal128 } = require("mongodb");
-const { json } = require("express");
+import { pbkdf2Sync, randomBytes } from "crypto";
+import { Decimal128 } from "mongodb";
+import { schemaT } from "./interface.schema";
 
 class newErr extends Error {
-  constructor(message) {
+  constructor(message: string | undefined) {
     super(message);
     this.name = "newErr";
   }
@@ -17,8 +15,10 @@ class newErr extends Error {
  * @returns {object} - the validated data
  * @throws {Error} - if the data is not valid
  */
+
 class Schema {
-  constructor(schema) {
+  schema: Record<string, any>;
+  constructor(schema: schemaT) {
     this.schema = schema;
   }
   /**
@@ -32,7 +32,7 @@ class Schema {
 
   async checkSchema() {}
 
-  async validateData(inData) {
+  async validateData(inData: object) {
     let data = JSON.parse(JSON.stringify(inData));
 
     // if (Array.isArray(data)) {
@@ -122,7 +122,7 @@ class Schema {
          */
 
         if (typeof value === "object" && !Array.isArray(value)) {
-          const {
+          let {
             type,
             enum: enumValue,
             validate,
@@ -334,7 +334,7 @@ class Schema {
     }
   }
 
-  validator(data) {
+  validator(data: object) {
     let v;
     if (Array.isArray(data)) {
       data.forEach((data) => {
@@ -350,10 +350,10 @@ class Schema {
     }
   }
 
-  saveData(data) {
+  /*   saveData(data) {
     this.validate(data);
     return this.db.save(data);
-  }
+  } */
 }
 
 const dat = {
@@ -387,7 +387,11 @@ const neo = new Schema({
 console.log(neo.schema, "this ia a schema");
 
 //todo this will be migrated to mongodb section
-let jsond = {
+const jsond: {
+  required: Array<any>;
+  bsonType: Record<string, any>;
+  properties: Record<string, any>;
+} = {
   required: [],
   bsonType: {},
   properties: {},
@@ -395,7 +399,7 @@ let jsond = {
 
 const b = neo.schema;
 
-for ([k, v] of Object.entries(b)) {
+for (const [k, v] of Object.entries(b)) {
   // console.log(typeof k, "and the", typeof v);
   if (typeof v === "function") {
     if (v.name === "String") {
@@ -524,185 +528,181 @@ console.log(jsond);
 // todo create a structure for creating table for mysql
 let vc = [];
 
-if (typeof b === "object") {
-  let bbb = {};
-  for (const [key, value] of Object.entries(b)) {
-    bbb[key] = [];
-    if (typeof value === "function") {
-      if (value.name === "String" || value === "String") {
-        bbb[key].push(key + " VARCHAR");
-        //todo for sql
-      }
+// if (typeof b === "object") {
+//   let bbb = {};
+//   for (const [key, value] of Object.entries(b)) {
+//     bbb[key] = [];
+//     if (typeof value === "function") {
+//       if (value.name === "String" || value === "String") {
+//         bbb[key].push(key + " VARCHAR");
+//         //todo for sql
+//       }
 
-      if (value.name === "Number" || value === "Number") {
-        bbb[key].push(key + " INT");
-        //todo for sql
-      }
-      if (value.name === "Boolean" || value === "Boolean") {
-        //todo for sql
-        bbb[key].push(key + " BOOLEAN");
-      }
-    }
-    if (Array.isArray(value) /*&& value instanceof Array*/) {
-      // console.log(value, "<<<<<<<<<=========is an array ");
+//       if (value.name === "Number" || value === "Number") {
+//         bbb[key].push(key + " INT");
+//         //todo for sql
+//       }
+//       if (value.name === "Boolean" || value === "Boolean") {
+//         //todo for sql
+//         bbb[key].push(key + " BOOLEAN");
+//       }
+//     }
+//     if (Array.isArray(value) /*&& value instanceof Array*/) {
+//       // console.log(value, "<<<<<<<<<=========is an array ");
 
-      if (
-        typeof value[0] === "string" ||
-        value[0].name === "String" ||
-        value[0] === "String"
-      ) {
-      }
-      if (value[0].name === "Number" || value[0] === "Number") {
-      }
-      if (value[0].name === "Boolean" || value[0] === "Boolean") {
-      }
-    }
-    if (typeof value === "object" && !Array.isArray(v)) {
-      const {
-        type,
-        enum: enumValue,
-        validate,
-        required,
-        unique,
-        maxLength,
-        minLength,
-        include,
-        isEmail,
-        forEncrypting,
-        isDefault,
-        isPassword,
-        minimum,
-        maximum,
-      } = value;
-      if (typeof type) {
-        console.log(typeof type.name === "string", "type of type");
-      }
-      if (typeof type && typeof type.name === "string") {
-        //todo for sql
-        bbb[key].push("VARCHAR");
-      }
+//       if (
+//         typeof value[0] === "string" ||
+//         value[0].name === "String" ||
+//         value[0] === "String"
+//       ) {
+//       }
+//       if (value[0].name === "Number" || value[0] === "Number") {
+//       }
+//       if (value[0].name === "Boolean" || value[0] === "Boolean") {
+//       }
+//     }
+//     if (typeof value === "object" && !Array.isArray(v)) {
+//       const {
+//         type,
+//         enum: enumValue,
+//         validate,
+//         required,
+//         unique,
+//         maxLength,
+//         minLength,
+//         include,
+//         isEmail,
+//         forEncrypting,
+//         isDefault,
+//         isPassword,
+//         minimum,
+//         maximum,
+//       } = value;
+//       if (typeof type) {
+//         console.log(typeof type.name === "string", "type of type");
+//       }
+//       if (typeof type && typeof type.name === "string") {
+//         //todo for sql
+//         bbb[key].push("VARCHAR");
+//       }
 
-      if (typeof type && typeof type.name === "number") {
-        //todo for sql
-        bbb[key].push("INT");
-      }
-      if (typeof type && typeof type.name === "boolean") {
-        bbb[key].push("BOOLEAN");
-        //todo for sql
-      }
+//       if (typeof type && typeof type.name === "number") {
+//         //todo for sql
+//         bbb[key].push("INT");
+//       }
+//       if (typeof type && typeof type.name === "boolean") {
+//         bbb[key].push("BOOLEAN");
+//         //todo for sql
+//       }
 
-      if (required) {
-        if (Array.isArray(required)) {
-          bbb[key].push("NOT NULL");
-          //todo for sql        //todo for sql
-        }
-        bbb[key].push("NOT NULL");
-        //todo for sql
-      }
-      if (unique) {
-        //todo for sql
-        bbb[key].push("UNIQUE");
-      }
-      if (maxLength) {
-        if (Array.isArray(maxLength)) {
-          bbb[key].shift();
-          bbb[key].push(`VARCHAR(${maxLength[0]})`);
-          //todo for sql
-        }
-        bbb[key].shift();
-        bbb[key].push(`VARCHAR(${maxLength})`);
+//       if (required) {
+//         if (Array.isArray(required)) {
+//           bbb[key].push("NOT NULL");
+//           //todo for sql        //todo for sql
+//         }
+//         bbb[key].push("NOT NULL");
+//         //todo for sql
+//       }
+//       if (unique) {
+//         //todo for sql
+//         bbb[key].push("UNIQUE");
+//       }
+//       if (maxLength) {
+//         if (Array.isArray(maxLength)) {
+//           bbb[key].shift();
+//           bbb[key].push(`VARCHAR(${maxLength[0]})`);
+//           //todo for sql
+//         }
+//         bbb[key].shift();
+//         bbb[key].push(`VARCHAR(${maxLength})`);
 
-        //todo for sql
-      }
-      if (minimum) {
-        if (Array.isArray(minimum)) {
-          bbb[key].shift();
-          bbb[key].push(`VARCHAR(${minimum[0]})`);
+//         //todo for sql
+//       }
+//       if (minimum) {
+//         if (Array.isArray(minimum)) {
+//           bbb[key].shift();
+//           bbb[key].push(`VARCHAR(${minimum[0]})`);
 
-          //todo for sql
-        }
-        bbb[key].shift();
-        bbb[key].push(`VARCHAR(${minimum})`);
+//           //todo for sql
+//         }
+//         bbb[key].shift();
+//         bbb[key].push(`VARCHAR(${minimum})`);
 
-        //todo for sql
-      }
-      if (maximum) {
-        if (Array.isArray(maximum)) {
-          bbb[key].shift();
-          bbb[key].push(`VARCHAR(${maximum[0]})`);
+//         //todo for sql
+//       }
+//       if (maximum) {
+//         if (Array.isArray(maximum)) {
+//           bbb[key].shift();
+//           bbb[key].push(`VARCHAR(${maximum[0]})`);
 
-          //todo for sql
-        }
-        bbb[key].shift();
-        bbb[key].push(`VARCHAR(${maximum})`);
-        //todo for sql
-      }
-      if (minLength) {
-        // console.log("typeof minlength", typeof minLength);
-        if (Array.isArray(minLength)) {
-          bbb[key].shift();
-          bbb[key].push(`VARCHAR(${minLength[0]})`);
+//           //todo for sql
+//         }
+//         bbb[key].shift();
+//         bbb[key].push(`VARCHAR(${maximum})`);
+//         //todo for sql
+//       }
+//       if (minLength) {
+//         // console.log("typeof minlength", typeof minLength);
+//         if (Array.isArray(minLength)) {
+//           bbb[key].shift();
+//           bbb[key].push(`VARCHAR(${minLength[0]})`);
 
-          //todo for sql
-        } else {
-          bbb[key].shift();
-          bbb[key].push(`VARCHAR(${minLength})`);
-        }
+//           //todo for sql
+//         } else {
+//           bbb[key].shift();
+//           bbb[key].push(`VARCHAR(${minLength})`);
+//         }
 
-        //todo for sql
-      }
-      if (include) {
-        //todo for sql
-        if (Array.isArray(include)) {
-          //todo for sql
-        }
-      }
-      if (enumValue) {
-        //todo for sql
-      }
-      if (isEmail) {
-        //todo for sql
-        if (Array.isArray(isEmail)) {
-          bbb[key].push(`VARCHAR(${255})`);
+//         //todo for sql
+//       }
+//       if (include) {
+//         //todo for sql
+//         if (Array.isArray(include)) {
+//           //todo for sql
+//         }
+//       }
+//       if (enumValue) {
+//         //todo for sql
+//       }
+//       if (isEmail) {
+//         //todo for sql
+//         if (Array.isArray(isEmail)) {
+//           bbb[key].push(`VARCHAR(${255})`);
 
-          //todo for sql
-        }
-      }
-      if (forEncrypting && !isPassword) {
-        //todo for sql
-      }
-      if (isPassword && !forEncrypting) {
-        if (Array.isArray(isPassword)) {
-          //todo for sql
-        }
-      }
+//           //todo for sql
+//         }
+//       }
+//       if (forEncrypting && !isPassword) {
+//         //todo for sql
+//       }
+//       if (isPassword && !forEncrypting) {
+//         if (Array.isArray(isPassword)) {
+//           //todo for sql
+//         }
+//       }
 
-      if (isDefault) {
-        if (Array.isArray(isDefault)) {
-          bbb[key].push(`DEFAULT '${isDefault[0]}'`);
+//       if (isDefault) {
+//         if (Array.isArray(isDefault)) {
+//           bbb[key].push(`DEFAULT '${isDefault[0]}'`);
 
-          //todo for sql
-        } else {
-          bbb[key].push(`DEFAULT '${isDefault}'`);
+//           //todo for sql
+//         } else {
+//           bbb[key].push(`DEFAULT '${isDefault}'`);
 
-          //todo for sql
-        }
-      }
-    }
+//           //todo for sql
+//         }
+//       }
+//     }
 
-    // console.log(
-    //   key,
-    //   "<<<<<<<<<<<------key and data---------->>>>>>>>",
-    //   data[key]
-    // );
-  }
-  // console.log(data);
-  console.log(bbb);
-}
-
-
-
-
+//     // console.log(
+//     //   key,
+//     //   "<<<<<<<<<<<------key and data---------->>>>>>>>",
+//     //   data[key]
+//     // );
+//   }
+//   // console.log(data);
+//   console.log(bbb);
+// }
 
 neo.validator([
   {

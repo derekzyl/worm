@@ -1,15 +1,18 @@
 // const { scrypt, randomFill, createCipheriv } = import("node:crypto");
-const crypto = require("crypto");
-const { Buffer } = require("node:buffer");
+
+import { createCipheriv, createDecipheriv, scryptSync } from "crypto";
 
 var fs = require("fs");
 
-class ENCRYPT {
+export class ENCRYPT {
   password = "Password used to generate key";
   salt = "this is the salt used to hash the crypto sync yrtytyuuy8yuyu9yo8yuio";
   iv = Buffer.alloc(16, 0, "hex");
   algorithm = "aes-192-cbc";
-  constructor(data) {
+  key: any;
+  encrypted: string;
+  decrypted: string;
+  constructor(data?: { password: string; salt: string; iv: Buffer }) {
     if (data) {
       const { password, salt, iv } = data;
 
@@ -34,11 +37,11 @@ class ENCRYPT {
       //   this.iv = Buffer.alloc(16, 0, "hex");
       // }
     }
-    this.key = crypto.scryptSync(this.password, this.salt, 24);
+    this.key = scryptSync(this.password, this.salt, 24);
     this.encrypted = "";
     this.decrypted = "";
   }
-  encrypting(myData) {
+  encrypting(myData: string) {
     var writeStream = fs.createWriteStream("encryptionKey.json");
     const s = {
       data: {
@@ -55,7 +58,7 @@ class ENCRYPT {
     writeStream.write(JSON.stringify(s));
 
     writeStream.end();
-    const cipher = crypto.createCipheriv(this.algorithm, this.key, this.iv);
+    const cipher = createCipheriv(this.algorithm, this.key, this.iv);
 
     cipher.setEncoding("hex");
 
@@ -68,7 +71,7 @@ class ENCRYPT {
     cipher.end();
   }
 
-  async decrypting(data) {
+  async decrypting(data: any) {
     const encryptionDatas = require("./encryptionKey.json");
     const dt = await JSON.parse(JSON.stringify(encryptionDatas));
     const bufferKey = Buffer.from(dt.data.key);
@@ -78,11 +81,7 @@ class ENCRYPT {
     // console.log(Buffer.from(dt.data.key), "na the  buffer key be this");
     // console.log(Buffer.from(dt.data.iv), "na the  buffer iv be this");
 
-    const decipher = crypto.createDecipheriv(
-      dt.data.algorithm,
-      bufferKey,
-      bufferIv
-    );
+    const decipher = createDecipheriv(dt.data.algorithm, bufferKey, bufferIv);
 
     decipher.on("readable", () => {
       let chunk;
@@ -97,6 +96,3 @@ class ENCRYPT {
     decipher.end();
   }
 }
-const s = new ENCRYPT();
-s.encrypting("hello world");
-console.log(s.encrypted);
