@@ -32,7 +32,11 @@ class Schema {
 
   async checkSchema() {}
 
+<<<<<<< HEAD
   async validateData(inData: object) {
+=======
+  async validateData(inData:Record<string, any>) {
+>>>>>>> a48cd688df671991afc40b397ef5755a4b105f36
     let data = JSON.parse(JSON.stringify(inData));
 
     // if (Array.isArray(data)) {
